@@ -4,8 +4,8 @@
 using std::cout;
 #include "screens.h"
 #include "objects.h"
-#define SCREENHEIGHT 800
-#define SCREENWIDTH 800
+#define SCREENHEIGHT 850
+#define SCREENWIDTH 600
 
 GameScreen CurrentScreen;
 int display;
@@ -13,12 +13,14 @@ int display;
 int main(void) {
     InitWindow(SCREENHEIGHT, SCREENWIDTH, "Trapped");
     InitMain();
-
+   // SetWindowState(FLAG_WINDOW_RESIZABLE);
+   // SetWindowMinSize(300, 300);
     switch(CurrentScreen) {
-            case LOGO: break;
-            case ANIM: break;
-            case GAME: InitGame(); break;
+        case LOGO: break;
+        case ANIM: break;
+        case GAME: InitGame(); break;
     }
+
     while (!WindowShouldClose()) {
         UpdateDrawingFrame();
     }

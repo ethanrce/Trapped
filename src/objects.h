@@ -14,4 +14,5 @@ class Object {
 Object makeObject(Texture2D png);
 void Animations(void);
 void Movement(void);
+bool CheckCollisions(void);
 #endif
