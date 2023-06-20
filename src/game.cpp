@@ -2,13 +2,17 @@
 #include <raymath.h>
 #include "screens.h"
 #include "objects.h"
+#include <vector>
 #include <iostream>
 using namespace std;
+
 
 #define FPS 60
 #define FRAMESPEED 8 // Seconds between each animation frame
 #define FLYROTATION 3.0f
 #define FLYSPEED 5.0f
+#define FLYSWATTERROTATION 5.0f
+#define TONGUESPEED 0.5f
 Object fly;
 Texture2D flypng;
 int flycounter;
@@ -23,7 +27,12 @@ Object tempflyswatter;
 Texture2D frogpng;
 Object tempfrog;
 Texture2D spiderpng;
+Texture2D spiderwebpng;
+vector<Object> spiders;
 Object tempspider;
+Object tempspiderweb;
+vector<Object> flyswatters;
+vector<Object> frogs;
 
 void InitGame(void) {
     RightBorder = (Rectangle){611, 46, 4, 500};
@@ -32,11 +41,18 @@ void InitGame(void) {
     fly = makeObject(flypng, GetScreenWidth()/2.0f, GetScreenWidth()/2.0f, 0.0f, (Vector2){flypng.width/4.0f, flypng.height/2.0f}, (Rectangle){0, 0, (float) flypng.width/2.0f, (float) flypng.height});
     gamebackground = LoadTexture("assets/background.png");
     flyswatterpng = LoadTexture("assets/FlySwatter.png");
-    tempflyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, 250.0f, 90.0f, (Vector2){0.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height});
+    tempflyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, 250.0f, 90.0f, (Vector2){ (float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height});
+    flyswatters.push_back(tempflyswatter);
+
     frogpng = LoadTexture("assets/Frog.png");
-    tempfrog = makeObject(frogpng, LeftBorder.x + LeftBorder.width, 150.0f, 0.0f, (Vector2){0.0f, 0.0f,}, (Rectangle){0.0f, 0.0f, (float) frogpng.width, (float) frogpng.height});
+    tempfrog = makeObject(frogpng, LeftBorder.x + LeftBorder.width, 150.0f, 0.0f, (Vector2){0.0f, 30.0f}, (Rectangle){0.0f, 0.0f, (float) frogpng.width, (float) frogpng.height});
+    frogs.push_back(tempfrog);
+
     spiderpng = LoadTexture("assets/Spider.png");
-    tempspider = makeObject(spiderpng, RightBorder.x, 200.0f, 0.0f, (Vector2){(float) spiderpng.width, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height});
+    spiderwebpng = LoadTexture("assets/SpiderWeb.png");
+    tempspiderweb = makeObject(spiderwebpng, RightBorder.x, 200.0f, 0.0f, (Vector2){(float) spiderpng.width, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height});
+    tempspider = makeObject(spiderpng, tempspiderweb.position.x - tempspiderweb.position.width/2.0f, tempspiderweb.position.y + tempspiderweb.position.height/2.0f, 0.0f, (Vector2){(float) spiderpng.width/2.0f, spiderpng.height/2.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height});
+    spiders.push_back(tempspider);
     flycounter = 0;
     flyframe = 0;
     camera = {0};
@@ -45,7 +61,6 @@ void InitGame(void) {
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
     gamebackgroundinfo = {(Rectangle) {0.0f, 0.0f, (float) gamebackground.width, (float) gamebackground.height}, 0, 0, 0, 0, NPATCH_NINE_PATCH};
-
 }
 
 void UpdateGame(void) {
@@ -53,6 +68,27 @@ void UpdateGame(void) {
     Movement();
    // camera.zoom = GetScreenWidth()/800.0f;
     camera.target = (Vector2){fly.position.x, fly.position.y};
+
+    for (int i = 0; i < (int) flyswatters.size(); i++) {
+        flyswatters[i].rotation += FLYSWATTERROTATION;
+    }
+
+    for (int i = 0; i < (int) frogs.size(); i++) {
+        if (std::string(frogs[i].direction) == "forward") {
+            frogs[i].tongue.width += TONGUESPEED;
+        } else {
+            frogs[i].tongue.width -= TONGUESPEED;
+        }
+
+        if (frogs[i].tongue.width > 100) {
+            frogs[i].direction = "backward";
+        } else if (frogs[i].tongue.width < 10) {
+            frogs[i].direction = "forward";
+        }
+    }
+    for (int i = 0; i < (int) spiders.size(); i++) {
+        spiders[i].rotation += FLYSWATTERROTATION;
+    }
 }
 
 void DrawGame(void) {
@@ -63,9 +99,21 @@ void DrawGame(void) {
         //DrawTexture(gamebackground, GetScreenWidth()/2.0f, GetScreenHeight()/2.0f, RAYWHITE);
         DrawTexturePro(flypng, fly.draw, fly.position, fly.origin, fly.rotation, RAYWHITE);
         DrawCircleLines(fly.position.x, fly.position.y, fly.position.width/2.0f, BLUE);
-        DrawTexturePro(flyswatterpng, tempflyswatter.draw, tempflyswatter.position, tempflyswatter.origin, tempflyswatter.rotation, RAYWHITE);
-        DrawTexturePro(frogpng, tempfrog.draw, tempfrog.position, tempfrog.origin, tempfrog.rotation, RAYWHITE);
-        DrawTexturePro(spiderpng, tempspider.draw, tempspider.position, tempspider.origin, tempspider.rotation, RAYWHITE);
+
+        for (int i = 0; i < (int) flyswatters.size(); i++) {
+            DrawTexturePro(flyswatterpng, flyswatters[i].draw, flyswatters[i].position, flyswatters[i].origin, flyswatters[i].rotation, RAYWHITE);
+        }
+
+        for (int i = 0; i < (int) frogs.size(); i++) {
+            DrawTexturePro(frogpng, frogs[i].draw, frogs[i].position, frogs[i].origin, frogs[i].rotation, RAYWHITE);
+            DrawRectangleRec(frogs[i].tongue, PINK);
+        }
+
+        DrawTexturePro(spiderwebpng, tempspiderweb.draw, tempspiderweb.position, tempspiderweb.origin, tempspiderweb.rotation, RAYWHITE);
+        for (int i = 0; i < (int) spiders.size(); i++) {
+            DrawTexturePro(spiderpng, spiders[i].draw, spiders[i].position, spiders[i].origin, spiders[i].rotation, RAYWHITE);
+        }
+       
     EndMode2D();
     DrawFPS(10, 10);
 }
@@ -116,4 +164,7 @@ bool CheckCollisions(void) {
 void UnloadGame(void) {
     UnloadTexture(flypng);
     UnloadTexture(gamebackground);
+    UnloadTexture(flyswatterpng);
+    UnloadTexture(frogpng);
+    UnloadTexture(spiderpng);
 }

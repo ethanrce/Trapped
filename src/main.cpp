@@ -64,5 +64,7 @@ Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Re
     obj.position = Rectangle{x, y, (float) obj.draw.width, obj.draw.height};
     obj.origin = origin;
     obj.rotation = rot;
+    obj.tongue = (Rectangle){obj.position.x + obj.position.width/2.0f, obj.position.y, 11, 3};
+    obj.direction = "forward";
     return obj;
 } 

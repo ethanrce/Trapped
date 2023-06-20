@@ -9,6 +9,8 @@ class Object {
     Rectangle position;
     Vector2 origin;
     float rotation;
+    Rectangle tongue;
+    const char *direction;
 };
 
 Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Rectangle draw);
