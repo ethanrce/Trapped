@@ -30,7 +30,7 @@ void InitGame(void) {
 void UpdateGame(void) {
     Animations();
     Movement();
- //   camera.target = (Vector2){fly.position.x, fly.position.y};
+    camera.target = (Vector2){fly.position.x, fly.position.y};
 }
 
 void DrawGame(void) {
