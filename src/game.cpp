@@ -19,7 +19,7 @@ void InitGame(void) {
     camera.target = (Vector2){fly.position.x, fly.position.y};
     camera.offset = (Vector2){GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
     camera.rotation = 0.0f;
-    camera.zoom = 6.0f;
+    camera.zoom = 1.0f;
 }
 
 void UpdateGame(void) {

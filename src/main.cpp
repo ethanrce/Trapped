@@ -10,6 +10,7 @@ using std::cout;
 
 GameScreen CurrentScreen;
 int display;
+Texture2D background;
 
 int main(void) {
     InitWindow(SCREENHEIGHT, SCREENWIDTH, "Trapped");
@@ -21,6 +22,7 @@ int main(void) {
             case GAME: InitGame(); break;
     }
     while (!WindowShouldClose()) {
+        DrawTexture(background, 0, 0, RAYWHITE);
         UpdateDrawingFrame();
     }
 
@@ -34,6 +36,7 @@ void InitMain(void) {
     display = GetCurrentMonitor();
    // SetTargetFPS(GetMonitorRefreshRate(display));
    SetTargetFPS(60);
+   background = LoadTexture("assets/background.png");
 }
 
 void UpdateDrawingFrame(void) {
@@ -64,4 +67,4 @@ Object makeObject(Texture2D png) {
     obj.origin = Vector2{obj.position.width/2.0f, obj.position.height/2.0f};
     obj.rotation = 0.0f;
     return obj;
-}
+} 
