@@ -2,6 +2,8 @@
 #include <raymath.h>
 #include "screens.h"
 #include "objects.h"
+#include <iostream>
+using namespace std;
 
 #define FPS 60
 #define FRAMESPEED 8 // Seconds between each animation frame
@@ -24,9 +26,17 @@ Texture2D spiderpng;
 Object tempspider;
 
 void InitGame(void) {
+    RightBorder = (Rectangle){611, 46, 4, 500};
+    LeftBorder = (Rectangle){253, 46, 4, 500};
     flypng = LoadTexture("assets/Fly.png");
+    fly = makeObject(flypng, GetScreenWidth()/2.0f, GetScreenWidth()/2.0f, 0.0f, (Vector2){flypng.width/4.0f, flypng.height/2.0f}, (Rectangle){0, 0, (float) flypng.width/2.0f, (float) flypng.height});
     gamebackground = LoadTexture("assets/background.png");
-    fly = makeObject(flypng);
+    flyswatterpng = LoadTexture("assets/FlySwatter.png");
+    tempflyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, 250.0f, 90.0f, (Vector2){0.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height});
+    frogpng = LoadTexture("assets/Frog.png");
+    tempfrog = makeObject(frogpng, LeftBorder.x + LeftBorder.width, 150.0f, 0.0f, (Vector2){0.0f, 0.0f,}, (Rectangle){0.0f, 0.0f, (float) frogpng.width, (float) frogpng.height});
+    spiderpng = LoadTexture("assets/Spider.png");
+    tempspider = makeObject(spiderpng, RightBorder.x, 200.0f, 0.0f, (Vector2){(float) spiderpng.width, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height});
     flycounter = 0;
     flyframe = 0;
     camera = {0};
@@ -35,8 +45,7 @@ void InitGame(void) {
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
     gamebackgroundinfo = {(Rectangle) {0.0f, 0.0f, (float) gamebackground.width, (float) gamebackground.height}, 0, 0, 0, 0, NPATCH_NINE_PATCH};
-    RightBorder = (Rectangle){611, 46, 4, 500};
-    LeftBorder = (Rectangle){253, 46, 4, 500};
+
 }
 
 void UpdateGame(void) {
@@ -47,7 +56,6 @@ void UpdateGame(void) {
 }
 
 void DrawGame(void) {
-   
     BeginMode2D(camera);
         DrawTextureNPatch(gamebackground, gamebackgroundinfo, (Rectangle) {0.0f, 0.0f, (float) GetScreenWidth(), (float) GetScreenHeight()}, Vector2Zero(), 0.0f, RAYWHITE);
         DrawRectangleRec(LeftBorder, SKYBLUE);
@@ -55,6 +63,9 @@ void DrawGame(void) {
         //DrawTexture(gamebackground, GetScreenWidth()/2.0f, GetScreenHeight()/2.0f, RAYWHITE);
         DrawTexturePro(flypng, fly.draw, fly.position, fly.origin, fly.rotation, RAYWHITE);
         DrawCircleLines(fly.position.x, fly.position.y, fly.position.width/2.0f, BLUE);
+        DrawTexturePro(flyswatterpng, tempflyswatter.draw, tempflyswatter.position, tempflyswatter.origin, tempflyswatter.rotation, RAYWHITE);
+        DrawTexturePro(frogpng, tempfrog.draw, tempfrog.position, tempfrog.origin, tempfrog.rotation, RAYWHITE);
+        DrawTexturePro(spiderpng, tempspider.draw, tempspider.position, tempspider.origin, tempspider.rotation, RAYWHITE);
     EndMode2D();
     DrawFPS(10, 10);
 }

@@ -57,12 +57,12 @@ void UpdateDrawingFrame(void) {
 void UnloadMain(void) {
 }
 
-Object makeObject(Texture2D png) {
+Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Rectangle draw) {
     Object obj;
     obj.texture = png;
-    obj.draw = Rectangle{0, 0, (float) png.width/2.0f, (float) png.height};;
-    obj.position = Rectangle{(float) GetScreenWidth()/2.0f, (float) GetScreenHeight()/2.0f, (float) obj.draw.width, obj.draw.height};
-    obj.origin = Vector2{obj.position.width/2.0f, obj.position.height/2.0f};
-    obj.rotation = 0.0f;
+    obj.draw = draw;
+    obj.position = Rectangle{x, y, (float) obj.draw.width, obj.draw.height};
+    obj.origin = origin;
+    obj.rotation = rot;
     return obj;
 } 
