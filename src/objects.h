@@ -12,4 +12,6 @@ class Object {
 };
 
 Object makeObject(Texture2D png);
+void Animations(void);
+void Movement(void);
 #endif

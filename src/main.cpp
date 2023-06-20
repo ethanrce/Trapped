@@ -7,7 +7,6 @@ using std::cout;
 #define SCREENHEIGHT 800
 #define SCREENWIDTH 800
 
-
 GameScreen CurrentScreen;
 int display;
 Texture2D background;
@@ -15,7 +14,7 @@ Texture2D background;
 int main(void) {
     InitWindow(SCREENHEIGHT, SCREENWIDTH, "Trapped");
     InitMain();
-
+    
     switch(CurrentScreen) {
             case LOGO: break;
             case ANIM: break;
@@ -57,6 +56,7 @@ void UpdateDrawingFrame(void) {
 }
 
 void UnloadMain(void) {
+    UnloadTexture(background);
 }
 
 Object makeObject(Texture2D png) {
