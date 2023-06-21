@@ -16,8 +16,8 @@ int main(void) {
    // SetWindowState(FLAG_WINDOW_RESIZABLE);
    // SetWindowMinSize(300, 300);
     switch(CurrentScreen) {
-        case LOGO: break;
-        case ANIM: break;
+        case LOGO: InitLogoScreen(); break;
+        case MAINMENU: InitMainMenu(); break;
         case GAME: InitGame(); break;
     }
 
@@ -25,13 +25,19 @@ int main(void) {
         UpdateDrawingFrame();
     }
 
-    UnloadGame();
+    switch(CurrentScreen) {
+        case LOGO: UnloadLogoScreen(); break;
+        case MAINMENU: UnloadMainMenu(); break;
+        case GAME: UnloadGame(); break;
+    }
+    UnloadMain();
+
     CloseWindow();
     return 0;
 }
 
 void InitMain(void) {
-    CurrentScreen = GAME;
+    CurrentScreen = LOGO;
     display = GetCurrentMonitor();
    // SetTargetFPS(GetMonitorRefreshRate(display));
    SetTargetFPS(60);
@@ -39,16 +45,31 @@ void InitMain(void) {
 
 void UpdateDrawingFrame(void) {
     switch(CurrentScreen) {
-            case LOGO: break;
-            case ANIM: break;
+            case LOGO: {
+            UpdateLogoScreen();
+            if (FinishLogoScreen()) {
+                UnloadLogoScreen();
+                //PlayMusicStream(gamesound);
+                InitMainMenu();
+                CurrentScreen = MAINMENU;
+            }
+            } break;
+            case MAINMENU: {
+            UpdateMainMenu();
+            if (FinishMainMenu()) {
+                UnloadMainMenu();
+                InitGame();
+                CurrentScreen = GAME;
+            }
+            } break;
             case GAME: UpdateGame(); break;
     }
 
     BeginDrawing();
         ClearBackground(RAYWHITE);
         switch(CurrentScreen) {
-            case LOGO: break;
-            case ANIM: break;
+            case LOGO: DrawLogoScreen(); break;
+            case MAINMENU: DrawMainMenu(); break;
             case GAME: DrawGame(); break;
     }
     EndDrawing();

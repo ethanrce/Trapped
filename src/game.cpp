@@ -45,12 +45,12 @@ vector<Object> frogs;
 vector<Object> spidershots;
 
 void InitGame(void) {
-    RightBorder = (Rectangle){611, 46, 4, 500};
-    LeftBorder = (Rectangle){253, 46, 4, 500};
+    RightBorder = (Rectangle){611, 46, 4, (float)(GetScreenHeight() - 106)};
+    LeftBorder = (Rectangle){253, 46, 4, (float)(GetScreenHeight() - 106)};
     flypng = LoadTexture("assets/Fly.png");
     fly = makeObject(flypng, GetScreenWidth()/2.0f, GetScreenWidth()/2.0f, 0.0f, (Vector2){flypng.width/4.0f, flypng.height/2.0f}, (Rectangle){0, 0, (float) flypng.width/2.0f, (float) flypng.height});
     backgroundbottompng = LoadTexture("assets/backgroundbottom.png");
-    backgroundbottom = makeObject(backgroundbottompng, GetScreenWidth()/2.0f, GetScreenHeight() - (backgroundbottompng.height/2.0), 0.0f, (Vector2){backgroundbottompng.width/2.0f, backgroundbottompng.height/2.0f}, (Rectangle){0.0f, 0.0f, backgroundbottompng.width, backgroundbottompng.height});
+    backgroundbottom = makeObject(backgroundbottompng, GetScreenWidth()/2.0f, GetScreenHeight(), 0.0f, (Vector2){(float) backgroundbottompng.width/2.0f, (float) backgroundbottompng.height/2.0f}, (Rectangle){0.0f, 0.0f,(float) backgroundbottompng.width, (float) backgroundbottompng.height});
     flyswatterpng = LoadTexture("assets/FlySwatter.png");
     tempflyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, 250.0f, 90.0f, (Vector2){ (float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height});
     flyswatters.push_back(tempflyswatter);
