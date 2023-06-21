@@ -129,7 +129,9 @@ void DrawGame(void) {
         // TODO: Use ChatGPT to draw circle on edge of flyswatter depending on it's rotation
         for (int i = 0; i < (int) flyswatters.size(); i++) {
             DrawTexturePro(flyswatterpng, flyswatters[i].draw, flyswatters[i].position, flyswatters[i].origin, flyswatters[i].rotation, RAYWHITE);
-            DrawCircleLines(flyswatters[i].position.x, flyswatters[i].position.y, flyswatters[i].position.width/2.0f, RED);
+            float rotatedX = flyswatters[i].position.x - (flyswatters[i].position.height/2.0f) * std::sin(flyswatters[i].rotation) + (flyswatters[i].position.width/2.0f) * std::cos(flyswatters[i].rotation);
+            float rotatedY = flyswatters[i].position.y - (flyswatters[i].position.height/2.0f) * std::cos(flyswatters[i].rotation) - (flyswatters[i].position.width/2.0f) * std::sin(flyswatters[i].rotation);
+            DrawCircleLines(rotatedX, rotatedY, flyswatters[i].position.width/2.0f, RED);
         }
 
         for (int i = 0; i < (int) frogs.size(); i++) {
