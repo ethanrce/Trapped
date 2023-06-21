@@ -14,6 +14,7 @@ class Object {
 };
 
 Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Rectangle draw);
+void RotateEnemy(int index);
 void Animations(void);
 void Movement(void);
 bool CheckCollisions(void);
