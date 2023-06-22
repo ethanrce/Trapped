@@ -15,7 +15,7 @@ Sound buttonsound;
 
 void InitMainMenu(void) {
     PlayButton = LoadTexture("assets/PlayButton.png");
-    Play = makeObject(PlayButton, (GetScreenWidth()/2.0f) - (PlayButton.width/2.0f), (GetScreenHeight()/2.0f) - (PlayButton.height/6.0f), 0.0f, (Vector2){0.0f, 0.0f}, (Rectangle){0.0f, 0.0f, (float) PlayButton.width, (float) PlayButton.height/3.0f});
+    Play = makeObject(PlayButton, (GetScreenWidth()/2.0f) - (PlayButton.width/2.0f), (GetScreenHeight()/2.0f) - (PlayButton.height/6.0f), 0.0f, (Vector2){0.0f, 0.0f}, (Rectangle){0.0f, 0.0f, (float) PlayButton.width, (float) PlayButton.height/3.0f}, "neither");
     buttonsound = LoadSound("assets/Audio/PlayButtonfx.wav");
     mousePoint = {0.0f, 0.0f};
     EndMainMenu = false;

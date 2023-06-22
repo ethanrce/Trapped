@@ -35,5 +35,5 @@ void InitGame(void);
 void UpdateGame(void);
 void DrawGame(void);
 void UnloadGame(void);
-
+bool FinishGame(void);
 #endif

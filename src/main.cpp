@@ -4,14 +4,14 @@
 using std::cout;
 #include "screens.h"
 #include "objects.h"
-#define SCREENHEIGHT 850
-#define SCREENWIDTH 600
+#define SCREENWIDTH 850
+#define SCREENHEIGHT 600
 
 GameScreen CurrentScreen;
 int display;
 
 int main(void) {
-    InitWindow(SCREENHEIGHT, SCREENWIDTH, "Trapped");
+    InitWindow(SCREENWIDTH, SCREENHEIGHT, "Trapped");
     InitMain();
    // SetWindowState(FLAG_WINDOW_RESIZABLE);
    // SetWindowMinSize(300, 300);
@@ -37,10 +37,11 @@ int main(void) {
 }
 
 void InitMain(void) {
+    srand(time(NULL));
     CurrentScreen = GAME;
     display = GetCurrentMonitor();
-   // SetTargetFPS(GetMonitorRefreshRate(display));
-   SetTargetFPS(60);
+    // SetTargetFPS(GetMonitorRefreshRate(display));
+    SetTargetFPS(60);
 }
 
 void UpdateDrawingFrame(void) {
@@ -62,7 +63,14 @@ void UpdateDrawingFrame(void) {
                 CurrentScreen = GAME;
             }
             } break;
-            case GAME: UpdateGame(); break;
+            case GAME: {
+                UpdateGame();
+                if (FinishGame()) {
+                    UnloadGame();
+                    InitMainMenu();
+                    CurrentScreen = MAINMENU;
+                }
+            } break;
     }
 
     BeginDrawing();
@@ -78,14 +86,23 @@ void UpdateDrawingFrame(void) {
 void UnloadMain(void) {
 }
 
-Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Rectangle draw) {
+float RandomNum(int min, int max) {
+    return min + (rand() % max);
+}
+
+Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Rectangle draw, const char *sidechoice) {
     Object obj;
     obj.texture = png;
     obj.draw = draw;
     obj.position = Rectangle{x, y, (float) obj.draw.width, obj.draw.height};
     obj.origin = origin;
     obj.rotation = rot;
-    obj.tongue = (Rectangle){obj.position.x + obj.position.width/2.0f, obj.position.y, 11, 3};
     obj.direction = "forward";
+    obj.side = sidechoice;
+    if (std::string(obj.side) == "left") {
+        obj.tongue = (Rectangle){obj.position.x + obj.position.width/2.0f, obj.position.y, 11, 3};
+    } else {
+        obj.tongue = (Rectangle){obj.position.x - obj.position.width/2.0f - 2, obj.position.y, 11, 3};
+    }
     return obj;
 } 
