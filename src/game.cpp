@@ -62,56 +62,24 @@ void InitGame(void) {
     camera.offset = (Vector2){GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
-    
-    flyswatters.clear();
-    spiders.clear();
-    spiderwebs.clear();
-    frogs.clear();
-    spidershots.clear();
 }
 
 void UpdateGame(void) {
     switch(GamePhase) {
         case(ROUNDSTART): { 
+            flyswatters.clear();
+            spiders.clear();
+            spiderwebs.clear();
+            frogs.clear();
+            spidershots.clear();
             gameround ++;
+            fly.position.x = GetScreenWidth()/2.0f;
+            fly.position.y = GetScreenHeight() - 106 - 50;
             RightBorder.y = (float)(GetScreenHeight() - 106 - 100) - (ROUNDSIZE * gameround); //Subtracting an extra 100 pixels to get above the last enemy drawn
             LeftBorder.y = (float)(GetScreenHeight() - 106 - 100) - (ROUNDSIZE * gameround);
             RightBorder.height = (ROUNDSIZE * gameround) + 100;
             LeftBorder.height = (ROUNDSIZE * gameround) + 100;
-            for (int i = ((GetScreenHeight() - 106) - FIRSTSPRITE); i > (GetScreenHeight() - 106) - (ROUNDSIZE * gameround); i -= SPRITESPACE) {
-                float enemy = RandomNum(1, 3);
-                float side = RandomNum(1, 2);
-              //  cout << enemy << " " << i << endl;
-                if (enemy == 1) {
-                    if (side == 1) {
-                        flyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, (float) i, 0.0f, (Vector2){(float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height}, "left");
-                        flyswatters.push_back(flyswatter);
-                    } else {
-                        flyswatter = makeObject(flyswatterpng, RightBorder.x, (float) i, 0.0f, (Vector2){ (float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height}, "right");
-                        flyswatters.push_back(flyswatter);
-                    }
-                } else if (enemy == 2) {
-                    if (side == 1) {
-                        frog = makeObject(leftfrogpng, LeftBorder.x + LeftBorder.width, (float) i - (rightfrogpng.height - 30), 0.0f, (Vector2){0.0f, 30.0f}, (Rectangle){0.0f, 0.0f, (float) rightfrogpng.width, (float) leftfrogpng.height}, "left");
-                        frogs.push_back(frog);
-                    } else {
-                        frog = makeObject(rightfrogpng, RightBorder.x, (float) i - (leftfrogpng.height - 30), 0.0f, (Vector2){(float) leftfrogpng.width, 30.0f}, (Rectangle){0.0f, 0.0f, (float) leftfrogpng.width, (float) rightfrogpng.height}, "right");
-                        frogs.push_back(frog);
-                    }
-                } else if (enemy == 3) {
-                    if (side == 1) {
-                        spiderweb = makeObject(spiderwebpng, LeftBorder.x + LeftBorder.width, (float) i - spiderwebpng.height, 0.0f, (Vector2){(float) 0.0f, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "left");
-                        spider = makeObject(spiderpng, spiderweb.position.x + spiderweb.position.width/2.0f, spiderweb.position.y + spiderweb.position.height/2.0f, 0.0f, (Vector2){(float) spiderpng.width/2.0f, spiderpng.height/2.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "left");
-                        spiders.push_back(spider);
-                        spiderwebs.push_back(spiderweb);
-                    } else {   
-                        spiderweb = makeObject(spiderwebpng, RightBorder.x, (float) i - spiderwebpng.height, 0.0f, (Vector2){(float) spiderpng.width, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "right");
-                        spider = makeObject(spiderpng, spiderweb.position.x - spiderweb.position.width/2.0f, spiderweb.position.y + spiderweb.position.height/2.0f, 0.0f, (Vector2){(float) spiderpng.width/2.0f, spiderpng.height/2.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "right");
-                        spiders.push_back(spider);
-                        spiderwebs.push_back(spiderweb);
-                    }
-                }
-            }
+            MakeEnemies();
             backgroundtop = makeObject(backgroundtoppng, GetScreenWidth()/2.0f, LeftBorder.y, 0.0f, (Vector2){(float) backgroundtoppng.width/2.0f, (float) backgroundtoppng.height}, (Rectangle){0.0f, 0.0f,(float) backgroundtoppng.width, (float) backgroundtoppng.height}, "neither");
             GamePhase = INROUND;
         } break;
@@ -131,12 +99,12 @@ void DrawGame(void) {
         DrawRectangleRec(LeftBorder, SKYBLUE); 
         DrawRectangleRec(RightBorder, SKYBLUE);
         DrawTexturePro(backgroundtoppng, backgroundtop.draw, backgroundtop.position, backgroundtop.origin, backgroundtop.rotation, RAYWHITE);
-        DrawRectangleLines(LeftBorder.x + 13, backgroundtop.position.y - backgroundtop.position.height/2.0f, (RightBorder.x - 16) - (LeftBorder.x + 13), 1, RED);
         DrawTexturePro(flypng, fly.draw, fly.position, fly.origin, fly.rotation, RAYWHITE);
         DrawCircleLines(fly.position.x, fly.position.y, fly.position.width/2.0f, BLUE);
 
         for (int i = 0; i < (int) flyswatters.size(); i++) {
             DrawTexturePro(flyswatters[i].texture, flyswatters[i].draw, flyswatters[i].position, flyswatters[i].origin, flyswatters[i].rotation, RAYWHITE);
+            DrawCircleLines(rotatedX, rotatedY, 25, RED);
         }
 
         for (int i = 0; i < (int) frogs.size(); i++) {
@@ -201,8 +169,45 @@ void Movement(void) {
     }
 }  
 
+void MakeEnemies(void) {
+    for (int i = ((GetScreenHeight() - 106) - FIRSTSPRITE); i > (GetScreenHeight() - 106) - (ROUNDSIZE * gameround); i -= SPRITESPACE) {
+        float enemy = RandomNum(1, 3);
+        float side = RandomNum(1, 2);
+        if (enemy == 1) {
+            if (side == 1) {
+                flyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, (float) i, 0.0f, (Vector2){(float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height}, "left");
+                flyswatters.push_back(flyswatter);
+            } else {
+                flyswatter = makeObject(flyswatterpng, RightBorder.x, (float) i, 0.0f, (Vector2){ (float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height}, "right");
+                flyswatters.push_back(flyswatter);
+            }
+        } else if (enemy == 2) {
+            if (side == 1) {
+                frog = makeObject(leftfrogpng, LeftBorder.x + LeftBorder.width, (float) i - (rightfrogpng.height - 30), 0.0f, (Vector2){0.0f, 30.0f}, (Rectangle){0.0f, 0.0f, (float) rightfrogpng.width, (float) leftfrogpng.height}, "left");
+                frogs.push_back(frog);
+            } else {
+                frog = makeObject(rightfrogpng, RightBorder.x, (float) i - (leftfrogpng.height - 30), 0.0f, (Vector2){(float) leftfrogpng.width, 30.0f}, (Rectangle){0.0f, 0.0f, (float) leftfrogpng.width, (float) rightfrogpng.height}, "right");
+                frogs.push_back(frog);
+            }
+        } else if (enemy == 3) {
+            if (side == 1) {
+                spiderweb = makeObject(spiderwebpng, LeftBorder.x + LeftBorder.width, (float) i - spiderwebpng.height, 0.0f, (Vector2){(float) 0.0f, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "left");
+                spider = makeObject(spiderpng, spiderweb.position.x + spiderweb.position.width/2.0f, spiderweb.position.y + spiderweb.position.height/2.0f, 0.0f, (Vector2){(float) spiderpng.width/2.0f, spiderpng.height/2.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "left");
+                spiders.push_back(spider);
+                spiderwebs.push_back(spiderweb);
+            } else {   
+                spiderweb = makeObject(spiderwebpng, RightBorder.x, (float) i - spiderwebpng.height, 0.0f, (Vector2){(float) spiderpng.width, 0.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "right");
+                spider = makeObject(spiderpng, spiderweb.position.x - spiderweb.position.width/2.0f, spiderweb.position.y + spiderweb.position.height/2.0f, 0.0f, (Vector2){(float) spiderpng.width/2.0f, spiderpng.height/2.0f}, (Rectangle){0.0f, 0.0f, (float) spiderpng.width, (float) spiderpng.height}, "right");
+                spiders.push_back(spider);
+                spiderwebs.push_back(spiderweb);
+            }
+        }
+    }
+}
+
 void EnemyMovement(void) {
     for (int i = 0; i < (int) flyswatters.size(); i++) {
+        cout << flyswatters[i].direction << " " << flyswatters[i].rotation << endl;
         if (std::string(flyswatters[i].direction) == "forward") {
             if (std::string(flyswatters[i].side)  == "left") {
                 flyswatters[i].rotation += FLYSWATTERROTATION;
@@ -217,12 +222,18 @@ void EnemyMovement(void) {
             }
         }
 
-
-        if (flyswatters[i].rotation > 180) {
-            flyswatters[i].direction = "backward";
-        }
-        if (flyswatters[i].rotation < 0) {
-            flyswatters[i].direction = "forward";
+        if (std::string(flyswatters[i].side) == "left") {
+            if (std::string(flyswatters[i].direction) == "forward" && flyswatters[i].rotation > 180) {
+                flyswatters[i].direction = "backward";
+            } else if (std::string(flyswatters[i].direction) == "backward" && flyswatters[i].rotation < 0) {
+                flyswatters[i].direction = "forward";
+            }
+        } else {
+            if (std::string(flyswatters[i].direction) == "forward" && flyswatters[i].rotation < -180) {
+                flyswatters[i].direction = "backward";
+            } else if (std::string(flyswatters[i].direction) == "backward" && flyswatters[i].rotation > 0) {
+                flyswatters[i].direction = "forward";
+            }
         }
     }
 
@@ -290,14 +301,8 @@ bool CheckCollisions(void) {
     }
 
     for (int i = 0; i < (int) flyswatters.size(); i++) {
-        if (std::string(flyswatters[i].side) == "left") {
-            rotatedX = flyswatters[i].position.x + (cosf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
-            rotatedY = flyswatters[i].position.y + (sinf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
-        } else {
-            rotatedX = flyswatters[i].position.x + (cosf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
-            rotatedY = flyswatters[i].position.y + (sinf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
-        }
-        
+        rotatedX = flyswatters[i].position.x + (cosf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
+        rotatedY = flyswatters[i].position.y + (sinf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
         if (CheckCollisionCircles((Vector2){fly.position.x, fly.position.y}, fly.position.width/2.0f, (Vector2){rotatedX, rotatedY}, 25)) {
             gameover = true;
             return true;
@@ -309,6 +314,10 @@ bool CheckCollisions(void) {
             gameover = true;
             return true;
         }
+    }
+    Rectangle top = (Rectangle) {LeftBorder.x + 13, backgroundtop.position.y - backgroundtop.position.height/2.0f, (RightBorder.x - 16) - (LeftBorder.x + 13), 1};
+    if (CheckCollisionCircleRec((Vector2){fly.position.x, fly.position.y}, (fly.position.width/2.0f), top)) {
+        GamePhase = ROUNDSTART;
     }
     return false;
 }
