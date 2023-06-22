@@ -12,7 +12,7 @@ using namespace std;
 #define FLYROTATION 3.0f
 #define FLYSPEED 5.0f
 #define SPIDERROTATION 1.0f
-#define FLYSWATTERROTATION 5.0f
+#define FLYSWATTERROTATION 2.0f
 #define TONGUESPEED 1.0f
 #define SPIDERCOOLDOWN 1.0f
 #define SPIDERSHOTSPEED 3.0f
@@ -52,7 +52,7 @@ void InitGame(void) {
     backgroundbottompng = LoadTexture("assets/backgroundbottom.png");
     backgroundbottom = makeObject(backgroundbottompng, GetScreenWidth()/2.0f, GetScreenHeight(), 0.0f, (Vector2){(float) backgroundbottompng.width/2.0f, (float) backgroundbottompng.height/2.0f}, (Rectangle){0.0f, 0.0f,(float) backgroundbottompng.width, (float) backgroundbottompng.height});
     flyswatterpng = LoadTexture("assets/FlySwatter.png");
-    tempflyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, 250.0f, 90.0f, (Vector2){ (float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height});
+    tempflyswatter = makeObject(flyswatterpng, LeftBorder.x + LeftBorder.width, 250.0f, 0.0f, (Vector2){ (float) flyswatterpng.width/2.0f, (float) flyswatterpng.height}, (Rectangle) {0.0f, 0.0f, (float) flyswatterpng.width, (float) flyswatterpng.height});
     flyswatters.push_back(tempflyswatter);
 
     frogpng = LoadTexture("assets/Frog.png");
@@ -89,6 +89,13 @@ void UpdateGame(void) {
             flyswatters[i].rotation -= FLYSWATTERROTATION;
         }
 
+        if (flyswatters[i].rotation > 180) {
+            flyswatters[i].direction = "backward";
+        }
+        if (flyswatters[i].rotation < 0) {
+            flyswatters[i].direction = "forward";
+        }
+        // Check collision of top of swatter with left border
     }
 
     for (int i = 0; i < (int) frogs.size(); i++) {
@@ -129,9 +136,10 @@ void DrawGame(void) {
         // TODO: Use ChatGPT to draw circle on edge of flyswatter depending on it's rotation
         for (int i = 0; i < (int) flyswatters.size(); i++) {
             DrawTexturePro(flyswatterpng, flyswatters[i].draw, flyswatters[i].position, flyswatters[i].origin, flyswatters[i].rotation, RAYWHITE);
-            float rotatedX = flyswatters[i].position.x - (flyswatters[i].position.height/2.0f) * std::sin(flyswatters[i].rotation) + (flyswatters[i].position.width/2.0f) * std::cos(flyswatters[i].rotation);
-            float rotatedY = flyswatters[i].position.y - (flyswatters[i].position.height/2.0f) * std::cos(flyswatters[i].rotation) - (flyswatters[i].position.width/2.0f) * std::sin(flyswatters[i].rotation);
-            DrawCircleLines(rotatedX, rotatedY, flyswatters[i].position.width/2.0f, RED);
+            float rotatedX = flyswatters[i].position.x + (cosf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
+            float rotatedY = flyswatters[i].position.y + (sinf((flyswatters[i].rotation - 90.0f) * (PI / 180.0f)) * (flyswatters[i].position.height - 15));
+         //   cout << sinf(flyswatters[i].rotation) << " " << cosf(flyswatters[i].rotation) << endl;
+           DrawCircleLines(rotatedX, rotatedY, 25, RED);
         }
 
         for (int i = 0; i < (int) frogs.size(); i++) {

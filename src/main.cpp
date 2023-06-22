@@ -37,7 +37,7 @@ int main(void) {
 }
 
 void InitMain(void) {
-    CurrentScreen = LOGO;
+    CurrentScreen = GAME;
     display = GetCurrentMonitor();
    // SetTargetFPS(GetMonitorRefreshRate(display));
    SetTargetFPS(60);
