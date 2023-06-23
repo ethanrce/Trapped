@@ -8,12 +8,12 @@ using namespace std;
 Texture2D PlayButton;
 Object Play;
 Vector2 mousePoint; // Gets mouse's position for button collision
-bool btnAction;
-int btnState;
-bool EndMainMenu; 
+bool btnAction, EndMainMenu;
+int btnState, highscore;
 Sound buttonsound;
 
 void InitMainMenu(void) {
+    highscore = GetHighScore();
     PlayButton = LoadTexture("assets/PlayButton.png");
     Play = makeObject(PlayButton, (GetScreenWidth()/2.0f) - (PlayButton.width/2.0f), (GetScreenHeight()/2.0f) - (PlayButton.height/6.0f), 0.0f, (Vector2){0.0f, 0.0f}, (Rectangle){0.0f, 0.0f, (float) PlayButton.width, (float) PlayButton.height/3.0f}, "neither");
     buttonsound = LoadSound("assets/Audio/PlayButtonfx.wav");
@@ -44,8 +44,12 @@ void UpdateMainMenu(void) {
 }
 
 void DrawMainMenu(void) {
+    ClearBackground(BEIGE);
     DrawTexturePro(PlayButton, Play.draw, Play.position, Play.origin, Play.rotation, RAYWHITE);
-    DrawRectangleLines(Play.position.x, Play.position.y, Play.position.width, Play.position.height, RED);
+    int highscoresize = MeasureText("Highscore:", 50);
+    const char *roundtext = ("Round " + std::to_string(highscore)).c_str();
+    DrawText("Highscore:", Play.position.x - (highscoresize/2.0f), Play.position.y + 100, 50, GOLD);
+    DrawText(roundtext, Play.position.x + (highscoresize/2.0f) + 10, Play.position.y + 100, 50, GOLD); //DrawText(highscoretext, Play.position.x + (highscoresize/2.0f), Play.position.y + 100, 20, GOLD);
 }
 
 void UnloadMainMenu(void) {

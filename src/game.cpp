@@ -6,7 +6,6 @@
 #include <iostream>
 using namespace std;
 
-
 #define FPS 60
 #define FRAMESPEED 8 // Seconds between each animation frame
 #define FLYROTATION 3.0f
@@ -14,12 +13,19 @@ using namespace std;
 #define SPIDERROTATION 1.0f
 #define FLYSWATTERROTATION 2.0f
 #define TONGUESPEED 3.0f
-#define SPIDERCOOLDOWN 1.0f
+#define SPIDERCOOLDOWN 1.5f
 #define SPIDERSHOTSPEED 3.0f
 #define ROUNDSIZE 500
 #define SPRITESPACE 150
 #define FIRSTSPRITE 196
+#define STORAGE_DATA_FILE "storage.data"
 
+typedef enum {
+    STORAGE_POSITION_HISCORE = 0,
+} StorageData;
+
+static bool SaveStorageValue(unsigned int position, int value);
+static int LoadStorageValue(unsigned int position);
 int flycounter, flyframe;
 int spidercounter;
 int gameround;
@@ -35,6 +41,7 @@ enum RoundScreen {ROUNDSTART, INROUND};
 RoundScreen GamePhase;
 
 void InitGame(void) {
+    // SaveStorageValue(STORAGE_POSITION_HISCORE, 0); // For publishing purposes after testing
     GamePhase = ROUNDSTART;
     gameround = 0;
     gameover = false;
@@ -93,6 +100,10 @@ void UpdateGame(void) {
 }
 
 void DrawGame(void) {
+    ClearBackground(BEIGE);
+    const char *round = ("Round: " + std::to_string(gameround)).c_str();
+    DrawText(round, 10, 50, 20, GOLD);
+    DrawFPS(10, 10);
     BeginMode2D(camera);
         //DrawTextureNPatch(gamebackground, gamebackgroundinfo, (Rectangle) {0.0f, 0.0f, (float) GetScreenWidth(), (float) GetScreenHeight()}, Vector2Zero(), 0.0f, RAYWHITE);
         DrawTexturePro(backgroundbottompng, backgroundbottom.draw, backgroundbottom.position, backgroundbottom.origin, backgroundbottom.rotation, RAYWHITE);
@@ -100,11 +111,9 @@ void DrawGame(void) {
         DrawRectangleRec(RightBorder, SKYBLUE);
         DrawTexturePro(backgroundtoppng, backgroundtop.draw, backgroundtop.position, backgroundtop.origin, backgroundtop.rotation, RAYWHITE);
         DrawTexturePro(flypng, fly.draw, fly.position, fly.origin, fly.rotation, RAYWHITE);
-        DrawCircleLines(fly.position.x, fly.position.y, fly.position.width/2.0f, BLUE);
 
         for (int i = 0; i < (int) flyswatters.size(); i++) {
             DrawTexturePro(flyswatters[i].texture, flyswatters[i].draw, flyswatters[i].position, flyswatters[i].origin, flyswatters[i].rotation, RAYWHITE);
-            DrawCircleLines(rotatedX, rotatedY, 25, RED);
         }
 
         for (int i = 0; i < (int) frogs.size(); i++) {
@@ -120,9 +129,7 @@ void DrawGame(void) {
         for (int i = 0; i < (int) spidershots.size(); i++) {
             DrawTexturePro(spidershotpng, spidershots[i].draw, spidershots[i].position, spidershots[i].origin, spidershots[i].rotation, RAYWHITE);
         }
-
     EndMode2D();
-    DrawFPS(10, 10);
 }
 
 void Animations(void) {
@@ -207,7 +214,6 @@ void MakeEnemies(void) {
 
 void EnemyMovement(void) {
     for (int i = 0; i < (int) flyswatters.size(); i++) {
-        cout << flyswatters[i].direction << " " << flyswatters[i].rotation << endl;
         if (std::string(flyswatters[i].direction) == "forward") {
             if (std::string(flyswatters[i].side)  == "left") {
                 flyswatters[i].rotation += FLYSWATTERROTATION;
@@ -323,14 +329,114 @@ bool CheckCollisions(void) {
 }
 
 bool FinishGame(void) {
+    if (gameover && gameround > LoadStorageValue(STORAGE_POSITION_HISCORE)) {
+        SaveStorageValue(STORAGE_POSITION_HISCORE, gameround);
+    }
     return gameover;
 } 
 
 void UnloadGame(void) {
     UnloadTexture(flypng);
     UnloadTexture(gamebackground);
+    UnloadTexture(backgroundtoppng);
+    UnloadTexture(backgroundbottompng);
     UnloadTexture(flyswatterpng);
     UnloadTexture(leftfrogpng);
     UnloadTexture(rightfrogpng);
     UnloadTexture(spiderpng);
+}
+
+int GetHighScore(void) {
+    return LoadStorageValue(STORAGE_POSITION_HISCORE);
+}
+
+bool SaveStorageValue(unsigned int position, int value)
+{
+    bool success = false;
+    unsigned int dataSize = 0;
+    unsigned int newDataSize = 0;
+    unsigned char *fileData = LoadFileData(STORAGE_DATA_FILE, &dataSize);
+    unsigned char *newFileData = NULL;
+
+    if (fileData != NULL)
+    {
+        if (dataSize <= (position*sizeof(int)))
+        {
+            // Increase data size up to position and store value
+            newDataSize = (position + 1)*sizeof(int);
+            newFileData = (unsigned char *)RL_REALLOC(fileData, newDataSize);
+
+            if (newFileData != NULL)
+            {
+                // RL_REALLOC succeded
+                int *dataPtr = (int *)newFileData;
+                dataPtr[position] = value;
+            }
+            else
+            {
+                // RL_REALLOC failed
+                TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to realloc data (%u), position in bytes (%u) bigger than actual file size", STORAGE_DATA_FILE, dataSize, position*sizeof(int));
+
+                // We store the old size of the file
+                newFileData = fileData;
+                newDataSize = dataSize;
+            }
+        }
+        else
+        {
+            // Store the old size of the file
+            newFileData = fileData;
+            newDataSize = dataSize;
+
+            // Replace value on selected position
+            int *dataPtr = (int *)newFileData;
+            dataPtr[position] = value;
+        }
+
+        success = SaveFileData(STORAGE_DATA_FILE, newFileData, newDataSize);
+        RL_FREE(newFileData);
+
+        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", STORAGE_DATA_FILE, value);
+    }
+    else
+    {
+        TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", STORAGE_DATA_FILE);
+
+        dataSize = (position + 1)*sizeof(int);
+        fileData = (unsigned char *)RL_MALLOC(dataSize);
+        int *dataPtr = (int *)fileData;
+        dataPtr[position] = value;
+
+        success = SaveFileData(STORAGE_DATA_FILE, fileData, dataSize);
+        UnloadFileData(fileData);
+
+        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", STORAGE_DATA_FILE, value);
+    }
+
+    return success;
+}
+
+// Load integer value from storage file (from defined position)
+// NOTE: If requested position could not be found, value 0 is returned
+int LoadStorageValue(unsigned int position)
+{
+    int value = 0;
+    unsigned int dataSize = 0;
+    unsigned char *fileData = LoadFileData(STORAGE_DATA_FILE, &dataSize);
+
+    if (fileData != NULL)
+    {
+        if (dataSize < (position*4)) TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to find storage position: %i", STORAGE_DATA_FILE, position);
+        else
+        {
+            int *dataPtr = (int *)fileData;
+            value = dataPtr[position];
+        }
+
+        UnloadFileData(fileData);
+
+        TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", STORAGE_DATA_FILE, value);
+    }
+
+    return value;
 }

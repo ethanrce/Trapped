@@ -38,7 +38,7 @@ int main(void) {
 
 void InitMain(void) {
     srand(time(NULL));
-    CurrentScreen = GAME;
+    CurrentScreen = MAINMENU;
     display = GetCurrentMonitor();
     // SetTargetFPS(GetMonitorRefreshRate(display));
     SetTargetFPS(60);

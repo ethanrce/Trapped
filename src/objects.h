@@ -14,6 +14,11 @@ class Object {
     const char *side;
 };
 
+//----------------------------------------------------------------------------------
+// Saving Function Declarations
+//----------------------------------------------------------------------------------
+int GetHighScore(void);
+
 Object makeObject(Texture2D png, float x, float y, float rot, Vector2 origin, Rectangle draw, const char *side);
 void EnemyMovement(void);
 void RotateEnemy(int index);
