@@ -1,4 +1,4 @@
 WIN:
-butler push "SpaceShooter.zip" ethanrce/SpaceShooter:win
+butler push "Trapped.zip" ethanrce/Trapped:win
 MAC:
-butler push "SpaceShooter.zip" ethanrce/SpaceShooter:mac
+butler push "Trapped.zip" ethanrce/Trapped:mac
