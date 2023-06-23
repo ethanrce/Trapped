@@ -4,7 +4,9 @@
 
 Trapped is a 2D survival created without the use of a conventional game engine. 
 
-The game was made in 5 days as a submission to  @serci98's Monthly GameJam #6 on itch.io (you can find the gamejam linked below).
+The game was made in 5 days as a submission to  @serci98's Monthly GameJam #6 on itch.io.
+
+Link to GameJam: https://itch.io/jam/month6
 
 The game was programmed with C/C++ using the Raylib library, OpenGL, and my own personalized library for extra functionality.
 
