@@ -5,7 +5,7 @@
 using namespace std;
 #include "objects.h"
 
-Texture2D PlayButton;
+Texture2D PlayButton, Logopng;
 Object Play;
 Vector2 mousePoint; // Gets mouse's position for button collision
 bool btnAction, EndMainMenu;
@@ -14,6 +14,7 @@ Sound buttonsound;
 
 void InitMainMenu(void) {
     highscore = GetHighScore();
+    Logopng = LoadTexture("assets/TrappedLogo.png");
     PlayButton = LoadTexture("assets/PlayButton.png");
     Play = makeObject(PlayButton, (GetScreenWidth()/2.0f) - (PlayButton.width/2.0f), (GetScreenHeight()/2.0f) - (PlayButton.height/6.0f), 0.0f, (Vector2){0.0f, 0.0f}, (Rectangle){0.0f, 0.0f, (float) PlayButton.width, (float) PlayButton.height/3.0f}, "neither");
     buttonsound = LoadSound("assets/Audio/PlayButtonfx.wav");
@@ -33,7 +34,6 @@ void UpdateMainMenu(void) {
             btnState = 1;
         }
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-            cout << "Clicked" << endl;
             EndMainMenu = true;
             PlaySound(buttonsound);
         }
@@ -45,14 +45,17 @@ void UpdateMainMenu(void) {
 
 void DrawMainMenu(void) {
     ClearBackground(BEIGE);
+    DrawTexture(Logopng, (GetScreenWidth()/2.0f)- (Logopng.width/2.0f), 100, RAYWHITE);
     DrawTexturePro(PlayButton, Play.draw, Play.position, Play.origin, Play.rotation, RAYWHITE);
     int highscoresize = MeasureText("Highscore:", 50);
     const char *roundtext = ("Round " + std::to_string(highscore)).c_str();
-    DrawText("Highscore:", Play.position.x - (highscoresize/2.0f), Play.position.y + 100, 50, GOLD);
-    DrawText(roundtext, Play.position.x + (highscoresize/2.0f) + 10, Play.position.y + 100, 50, GOLD); //DrawText(highscoretext, Play.position.x + (highscoresize/2.0f), Play.position.y + 100, 20, GOLD);
+    DrawText("Highscore:", Play.position.x - (highscoresize/2.0f), Play.position.y + 150, 50, GOLD);
+    DrawText(roundtext, Play.position.x + (highscoresize/2.0f) + 10, Play.position.y + 150, 50, GOLD); //DrawText(highscoretext, Play.position.x + (highscoresize/2.0f), Play.position.y + 100, 20, GOLD);
+    DrawText("Submission by @Ethom for Monthly Jam #6",10 , GetScreenHeight() - 25, 20, RED);
 }
 
 void UnloadMainMenu(void) {
+    UnloadTexture(Logopng);
     UnloadTexture(PlayButton);
     UnloadSound(buttonsound);
 }
