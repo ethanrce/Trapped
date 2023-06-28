@@ -41,7 +41,7 @@ enum RoundScreen {ROUNDSTART, INROUND};
 RoundScreen GamePhase;
 
 void InitGame(void) {
-   // SaveStorageValue(STORAGE_POSITION_HISCORE, 0); // For publishing purposes after testing
+    // SaveStorageValue(STORAGE_POSITION_HISCORE, 0); // For publishing purposes after testing
     GamePhase = ROUNDSTART;
     gameround = 0;
     gameover = false;
